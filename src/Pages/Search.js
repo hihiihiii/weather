@@ -15,7 +15,12 @@ const Search = () => {
 
     fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=${searchTerm}&units=imperial&appid=${API_KEY}`
-    );
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        setWeatherData(data);
+        console.log(data);
+      });
   };
 
   return (
