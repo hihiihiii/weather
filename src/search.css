@@ -4,7 +4,6 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-color: #ffffff;
   }
   
   .search-title {
@@ -37,14 +36,14 @@
   }
 
   .weather-icon {
-    width: 50px;
-    margin-right: 20px;
+    width: 60px;
   }
   
   .temperature {
     font-size: 36px;
     font-weight: bold;
     margin-right: 20px;
+    color: #fff;
   }
   
   .weather-description {

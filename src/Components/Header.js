@@ -3,7 +3,9 @@ import styled from "styled-components";
 import { FaHome, FaHeart, FaSearch } from "react-icons/fa";
 import { Link } from "react-router-dom";
 const HeaderBox = styled.header`
-  background-color: #f5f5f5;
+  position: fixed;
+  width: 100%;
+  background-color: transparent;
   height: 80px;
   display: flex;
   justify-content: center;
