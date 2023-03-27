@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { API_KEY } from "../contexts/WeatherContext";
+import weatherDescKo from "../utils/weatherDescKo";
+import "../style.css";
 
 const Home = () => {
   const [temperature, setTemperature] = useState(null);
   const [weatherDescription, setWeatherDescription] = useState(null);
-  //도시 이름
   const [city, setCity] = useState("");
 
   useEffect(() => {
@@ -18,14 +19,15 @@ const Home = () => {
           .then((data) => {
             setTemperature(data.main.temp);
             setCity(data.name);
-            setWeatherDescription(data.weather[0].main);
+            const code = weatherDescKo.find((el) => el[data.weather[0].id]);
+            setWeatherDescription(Object.values(code).join(""));
           });
       },
       (error) => {
         console.error(error);
       }
     );
-  });
+  }, []);
 
   return (
     <div className="App">

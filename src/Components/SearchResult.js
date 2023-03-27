@@ -1,20 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../search.css";
+import weatherDescKo from "../utils/weatherDescKo";
 
-const SearchResult = ({ temperature, outfitItems, description }) => {
+const SearchResult = ({
+  temperature,
+  outfitItems,
+  description,
+  icon,
+  weatherId,
+}) => {
+  const [weatherDesc, setWeatherDesc] = useState("");
   // description 설명
   // outfitItems 추천 의상
   // temperature -> 온도
+  const codeId = weatherDescKo.find((code) => code[weatherId]);
+
+  useEffect(() => {
+    setWeatherDesc(Object.values(codeId).join(""));
+  }, []);
+
   return (
     <div className="results-container">
       <div className="weather-info">
         <img
-          src="weather-icon.png"
+          src={`https://openweathermap.org/img/w/${icon}.png`}
           alt="weather icon"
           className="weather-icon"
         />
-        <p className="temperature">72&deg; F</p>
-        <p className="weather-description">Sunny</p>
+        <p className="temperature">{Math.floor(temperature)}&deg; C</p>
+        <p className="weather-description">{weatherDesc}</p>
       </div>
       <div className="outfit-recommendation">
         <h2 className="outfit-title">Outfit Recommendation</h2>

@@ -2,6 +2,7 @@ import React from "react";
 import "../recommendations.css";
 
 //외출 추천 페이지
+//현재 날씨와 기온에 맞는 옷을추천 해주는 페이지.
 const Recommendations = () => {
   return (
     <div className="recommendations-container">

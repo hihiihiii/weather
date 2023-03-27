@@ -2,25 +2,39 @@ import React, { useContext, useState } from "react";
 import SearchResult from "../Components/SearchResult";
 import { API_KEY, WeatherContext } from "../contexts/WeatherContext";
 import "../search.css";
+import weatherDescKo from "../utils/weatherDescKo";
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [data, setData] = useState([]);
   const [weatherData, setWeatherData] = useContext(WeatherContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
-    // API call to get weather data and update results state
-    // Example response data:
+  const handleSearch = async () => {
+    try {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${searchTerm}&units=metric&appid=${API_KEY}`
+      );
+      const data = await response.json();
 
-    fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${searchTerm}&units=imperial&appid=${API_KEY}`
-    )
-      .then((response) => response.json())
-      .then((data) => {
+      if (response.ok) {
         setWeatherData(data);
-        console.log(data);
-      });
+        setIsLoading(false);
+        setError("");
+      } else {
+        setIsLoading(false);
+        setWeatherData(null);
+        setError("입력한 도시는 없습니다.");
+      }
+    } catch (error) {
+      setIsLoading(false);
+      setError("에러 발생했습니다.");
+    }
+  };
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
   };
 
   return (
@@ -30,18 +44,21 @@ const Search = () => {
         type="text"
         placeholder="위치를 입력하세요."
         value={searchTerm}
-        onChange={handleSearch}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        onKeyDown={handleKeyPress}
         className="search-input"
       />
 
-      {data.length > 0 ? (
+      {weatherData ? (
         <SearchResult
-          temperature={data[0].temperature}
-          description={data[0].description}
-          outfitItems={data[0].outfitItems}
+          temperature={weatherData?.main.temp}
+          description={weatherData?.weather[0].description}
+          outfitItems={[]}
+          icon={weatherData.weather[0].icon}
+          weatherId={weatherData.weather[0].id}
         ></SearchResult>
       ) : (
-        <p className="no-results-message">No results found.</p>
+        <div>{error}</div>
       )}
     </div>
   );
