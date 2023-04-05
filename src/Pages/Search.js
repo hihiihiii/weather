@@ -1,8 +1,8 @@
 import React, { useContext, useState } from "react";
 import SearchResult from "../Components/SearchResult";
-import { API_KEY, WeatherContext } from "../contexts/WeatherContext";
+import { WeatherContext } from "../contexts/WeatherContext";
 import "../search.css";
-import weatherDescKo from "../utils/weatherDescKo";
+import { API_KEY } from "../utils/api";
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");

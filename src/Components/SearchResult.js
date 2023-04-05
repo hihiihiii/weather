@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { weatherDescKo } from "../contexts/WeatherContext";
 import "../search.css";
-import weatherDescKo from "../utils/weatherDescKo";
 
 const SearchResult = ({
   temperature,

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { API_KEY } from "../contexts/WeatherContext";
-import weatherDescKo from "../utils/weatherDescKo";
+import { getOutfitRecommendations } from "../contexts/WeatherContext";
 import "../style.css";
 import styled from "styled-components";
+import { API_KEY, fetchHourWeather } from "../utils/api";
 
 const Wrapper = styled.div`
   display: flex;
@@ -10,23 +10,25 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: center;
   height: 100vh;
+  background-color: #fff;
   background-image: ${(props) => {
     if (props.weatherCode >= 200 && props.weatherCode <= 232) {
       return "url(/asset/rain.jpg)";
     } else if (props.weatherCode >= 300 && props.weatherCode <= 321) {
       return "url(/asset/lightRain.jpg)";
     } else if (props.weatherCode >= 500 && props.weatherCode <= 531) {
-      return "url(/asset/rain.jpg)";
+      return "url(/asset/rain.png)";
     } else if (props.weatherCode >= 600 && props.weatherCode <= 622) {
       return "url(/asset/snow.jpg)";
     } else if (props.weatherCode >= 701 && props.weatherCode <= 781) {
-      return "url(/asset/fog.jpg)";
+      return "url(/asset/fog.png)";
     } else if (props.weatherCode === 800) {
-      return "url(/asset/clearSky.jpg)";
+      return "url(/asset/clearSky.png)";
     } else if (props.weatherCode >= 801 && props.weatherCode <= 804) {
-      return "url(/asset/cloudy.jpg)";
+      return "url(/asset/cloudy.png)";
     }
   }};
+
   background-repeat: no-repeat;
   background-size: cover;
 `;
@@ -38,7 +40,6 @@ const Spinner = styled.div`
   width: 50px;
   height: 50px;
   animation: spin 1s linear infinite;
-
   @keyframes spin {
     to {
       transform: rotate(360deg);
@@ -46,14 +47,35 @@ const Spinner = styled.div`
   }
 `;
 
+const WeatherHours = styled.div`
+  display: flex;
+  /* flex-direction: column; */
+
+  margin-top: 30px;
+  gap: 10px;
+`;
+
+const WeatherDay = styled.div`
+  width: 75px;
+  height: 75px;
+  padding: 10px;
+  background-color: white;
+`;
+
+const DayHours = styled.div``;
+
+const DayIcon = styled.div``;
+
+const DayTemp = styled.div``;
+
 const Home = () => {
   const [temperature, setTemperature] = useState(null);
-  const [weatherCode, setWeatherCode] = useState(800);
+  const [weatherCode, setWeatherCode] = useState(null);
   const [weatherIcon, setWeatherIcon] = useState(null);
+  const [hoursWeather, setHoursWeather] = useState([]);
   const [loading, setLoading] = useState(false);
   const [city, setCity] = useState("");
-
-  console.log(temperature);
+  const [outfit, setOutfit] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -69,11 +91,19 @@ const Home = () => {
             setCity(data.name);
             setWeatherCode(data.weather[0].id);
             setWeatherIcon(data.weather[0].icon);
+
+            const outfits = getOutfitRecommendations(
+              data.main.temp,
+              data.weather[0].id
+            );
+            setOutfit(outfits);
             setLoading(false);
-            // 한국어 변경 코드
-            // const code = weatherDescKo.find((el) => el[data.weather[0].id]);
-            // setWeatherDescription(Object.values(code).join(""));
           });
+        //날씨
+        fetchHourWeather(latitude, longitude).then(
+          (data) => setHoursWeather(data.list)
+          // setHoursWeather(data?.list.filter((el)=> el?.dt))
+        );
       },
       (error) => {
         console.error(error);
@@ -100,10 +130,37 @@ const Home = () => {
       <div className="outfit-container">
         <h2 className="outfit-title">추천 의상</h2>
         <div className="outfit-items">
-          <img src="tshirt.jpg" alt="T-shirt" className="outfit-item" />
-          <img src="shorts.jpg" alt="Shorts" className="outfit-item" />
-          <img src="sneakers.jpg" alt="Sneakers" className="outfit-item" />
+          {outfit?.map((item, index) => (
+            <img
+              src={item}
+              alt={`outfit-${index}`}
+              className="outfit-item"
+              key={index}
+            ></img>
+          ))}
         </div>
+        <WeatherHours>
+          {hoursWeather.slice(0, 10).map((day, index) => {
+            return (
+              <WeatherDay key={index}>
+                <DayHours>
+                  {new Date(day.dt * 1000).toLocaleDateString("ko-KR", {
+                    month: "long",
+                    day: "numeric",
+                    hour: "numeric",
+                  })}
+                </DayHours>
+                <DayIcon>
+                  <img
+                    className="weather-icon"
+                    src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
+                  />
+                </DayIcon>
+                <DayTemp>{day.main.temp}&deg;C</DayTemp>
+              </WeatherDay>
+            );
+          })}
+        </WeatherHours>
       </div>
     </Wrapper>
   );
