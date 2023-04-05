@@ -50,23 +50,27 @@ const Spinner = styled.div`
 const WeatherHours = styled.div`
   display: flex;
   /* flex-direction: column; */
-
   margin-top: 30px;
   gap: 10px;
 `;
 
 const WeatherDay = styled.div`
-  width: 75px;
-  height: 75px;
-  padding: 10px;
+  display: flex;
+  flex-direction: column;
   background-color: white;
+  padding: 25px;
+  align-items: center;
+  border-radius: 15px; ;
 `;
 
 const DayHours = styled.div``;
 
 const DayIcon = styled.div``;
 
-const DayTemp = styled.div``;
+const DayTemp = styled.div`
+  font-size: 22px;
+  font-weight: 500;
+`;
 
 const Home = () => {
   const [temperature, setTemperature] = useState(null);
@@ -87,6 +91,7 @@ const Home = () => {
         fetch(apiUrl)
           .then((response) => response.json())
           .then((data) => {
+            console.log(data);
             setTemperature(data.main.temp);
             setCity(data.name);
             setWeatherCode(data.weather[0].id);
@@ -140,7 +145,7 @@ const Home = () => {
           ))}
         </div>
         <WeatherHours>
-          {hoursWeather.slice(0, 10).map((day, index) => {
+          {hoursWeather.slice(0, 6).map((day, index) => {
             return (
               <WeatherDay key={index}>
                 <DayHours>
@@ -156,7 +161,7 @@ const Home = () => {
                     src={`https://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
                   />
                 </DayIcon>
-                <DayTemp>{day.main.temp}&deg;C</DayTemp>
+                <DayTemp>{Math.floor(day.main.temp)}&deg;C</DayTemp>
               </WeatherDay>
             );
           })}
