@@ -145,6 +145,8 @@ export const weatherDescKo = [
   { 962: "허리케인" },
 ];
 
+export const localLocation = () => {};
+
 export const WeatherProvider = ({ children }) => {
   const [weatherData, setWeatherData] = useState(null);
   return (
