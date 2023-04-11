@@ -15,6 +15,7 @@ import {
 } from "../Image/Image";
 
 export const WeatherContext = createContext();
+export const WeatherOutfitContext = createContext();
 
 //기온에 따라 입는 옷을 추천.
 export const getOutfitRecommendations = (temp, weatherCode) => {
@@ -26,42 +27,102 @@ export const getOutfitRecommendations = (temp, weatherCode) => {
   const samiCool = temp >= 5;
   const cold = temp <= 4;
 
-  const hotClothes = [Tshirt, Shorts, SleevelessShirt, Sunglasses];
-  const warmClothes = [Blouse, LongShirt, Jeans];
-  const coolClothes = [Jacket, Jeans, TrenchCoat];
-  const coldClothes = [Coat, Gloves];
+  const hotClothes = [
+    { item: Tshirt, title: "티셔츠", tip: "물을 많이 마시세요." },
+    { item: Shorts, title: "반팔 셔츠", tip: "해충에 조심하세요." },
+    {
+      item: SleevelessShirt,
+      title: "긴팔",
+      tip: "자외선 차단제를 바르세요.",
+    },
+    {
+      item: Sunglasses,
+      title: "야외 활동",
+      tip: "UV차단 안경을 착용하세요.",
+    },
+  ];
+  const warmClothes = [
+    { item: Blouse, title: "블라우스", tip: "가볍게 입으세요." },
+    { item: LongShirt, title: "긴팔 셔츠", tip: "편안한 신발을 신으세요." },
+    {
+      item: Jeans,
+      title: "데님 팬츠",
+      tip: "데님 팬츠를 입어 편안한 분위기를 보여주세요.",
+    },
+  ];
+  const coolClothes = [
+    { item: Jacket, title: "자켓", tip: "조금 두꺼운 옷을 입으세요." },
+    { item: Jeans, title: "데님 팬츠", tip: "추위를 막아줄 모자를 쓰세요." },
+    {
+      item: TrenchCoat,
+      title: "트랜치 코트",
+      tip: "일교차가 크니 코트를 준비하세요.",
+    },
+  ];
+  const coldClothes = [
+    {
+      item: Coat,
+      title: "코트",
+      tip: "두꺼운 목도리와 귀마개를 쓰세요.",
+    },
+    {
+      item: Gloves,
+      title: "장갑",
+      tip: "손가락이 춥지 않도록 적당한 장갑을 착용하세요.",
+    },
+  ];
 
   if (hot) {
     if (unbrellaRequired) {
-      hotClothes.unshift(Umbrella);
+      hotClothes.unshift({
+        item: Umbrella,
+        title: "우산",
+        tip: "우산을 챙겨 나가세요.",
+      });
       return hotClothes;
     } else {
       return hotClothes;
     }
   } else if (warm) {
     if (unbrellaRequired) {
-      warmClothes.unshift(Umbrella);
+      warmClothes.unshift({
+        item: Umbrella,
+        title: "우산",
+        tip: "우산을 챙겨 나가세요.",
+      });
       return warmClothes;
     } else {
       return warmClothes;
     }
   } else if (cool) {
     if (unbrellaRequired) {
-      coolClothes.unshift(Umbrella);
+      coolClothes.unshift({
+        item: Umbrella,
+        title: "우산",
+        tip: "우산을 챙겨 나가세요.",
+      });
       return coolClothes;
     } else {
       return coolClothes;
     }
   } else if (samiCool) {
     if (unbrellaRequired) {
-      coldClothes.unshift(Umbrella);
+      coldClothes.unshift({
+        item: Umbrella,
+        title: "우산",
+        tip: "우산을 챙겨 나가세요.",
+      });
       return coldClothes;
     } else {
       return coldClothes;
     }
   } else if (cold) {
     if (unbrellaRequired) {
-      coldClothes.unshift(Umbrella);
+      coldClothes.unshift({
+        item: Umbrella,
+        title: "우산",
+        tip: "우산을 챙겨 나가세요.",
+      });
       return coldClothes;
     } else {
       return coldClothes;
@@ -148,10 +209,13 @@ export const weatherDescKo = [
 export const localLocation = () => {};
 
 export const WeatherProvider = ({ children }) => {
-  const [weatherData, setWeatherData] = useState(null);
+  const [weatherData, setWeatherData] = useState([]);
+  const [outfit, setOutfit] = useState([]);
   return (
     <WeatherContext.Provider value={[weatherData, setWeatherData]}>
-      {children}
+      <WeatherOutfitContext.Provider value={[outfit, setOutfit]}>
+        {children}
+      </WeatherOutfitContext.Provider>
     </WeatherContext.Provider>
   );
 };

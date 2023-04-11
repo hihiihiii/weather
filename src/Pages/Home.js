@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { getOutfitRecommendations } from "../contexts/WeatherContext";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  getOutfitRecommendations,
+  WeatherContext,
+  WeatherOutfitContext,
+} from "../contexts/WeatherContext";
 import "../style.css";
 import styled from "styled-components";
 import { API_KEY, API_KEY_DUST, fetchHourWeather } from "../utils/api";
 import DustProgress from "../Components/Gauge";
 import proj4 from "proj4";
+import Timer from "../Components/Timer";
 
 const Wrapper = styled.div`
   display: flex;
@@ -78,17 +83,10 @@ const MainMidBox = styled.div`
 
 const MainTopBox = styled.div`
   margin-top: 10px;
+  gap: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-`;
-
-const Timer = styled.div`
-  color: #fff;
-  text-align: center;
-  font-size: 24px;
-  width: 200px;
-  align-self: center;
 `;
 
 const DayHours = styled.div``;
@@ -104,8 +102,17 @@ const DayFeelsLike = styled.div`
   font-size: 14px;
 `;
 
+const TemperatureText = styled.div`
+  font-size: 24px;
+  color: white;
+`;
+
+const CityText = styled.div`
+  font-size: 24px;
+  color: white;
+`;
+
 const Home = () => {
-  const [time, setTime] = useState(new Date());
   const [temperature, setTemperature] = useState(null);
   const [weatherCode, setWeatherCode] = useState(null);
   const [weatherIcon, setWeatherIcon] = useState(null);
@@ -113,7 +120,6 @@ const Home = () => {
   const [dust, setDust] = useState(null);
   const [loading, setLoading] = useState(false);
   const [city, setCity] = useState("");
-  const [outfit, setOutfit] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -128,6 +134,7 @@ const Home = () => {
         const tm = proj4(epsg4326, epsg5179, lnglat);
         const nearbyApiURL = `http://apis.data.go.kr/B552584/MsrstnInfoInqireSvc/getNearbyMsrstnList?serviceKey=${API_KEY_DUST}&returnType=json&tmX=${tm[0]}&tmY=${tm[1]}&ver=1.0`;
 
+        //근처 미세먼지 관측소 및 미세먼지 정보
         fetch(nearbyApiURL)
           .then((response) => response.json())
           .then((data) => {
@@ -139,10 +146,10 @@ const Home = () => {
               });
           });
 
-        // /////////////////////////////////////////////////////////////////////////////////// /////////////////////////////////////////////////////////////////////////////////
-
+        // OpenWeather 날씨.
         const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`;
         setLoading(true);
+
         fetch(apiUrl)
           .then((response) => response.json())
           .then((data) => {
@@ -150,15 +157,11 @@ const Home = () => {
             setCity(data?.name);
             setWeatherCode(data?.weather[0].id);
             setWeatherIcon(data?.weather[0].icon);
-            const outfits = getOutfitRecommendations(
-              data.main.temp,
-              data.weather[0].id
-            );
-            setOutfit(outfits);
+
             setLoading(false);
           });
 
-        //날씨
+        //실시간 날씨
         fetchHourWeather(latitude, longitude).then((data) =>
           setHoursWeather(data.list)
         );
@@ -169,13 +172,6 @@ const Home = () => {
     );
   }, []);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
   return (
     <Wrapper weatherCode={weatherCode} className="App">
       <div className="weather-container">
@@ -183,16 +179,12 @@ const Home = () => {
           <Spinner></Spinner>
         ) : (
           <MainFlexBox>
-            <Timer>
-              {time.toLocaleTimeString("ko-KR", {
-                hour: "numeric",
-                minute: "numeric",
-                second: "numeric",
-              })}
-            </Timer>
+            <Timer></Timer>
             <MainTopBox>
-              <div className="temperature">{Math.floor(temperature)}&deg;C</div>
-              <div className="city-name">{city}</div>
+              <TemperatureText className="temperature">
+                {Math.floor(temperature)}&deg;C
+              </TemperatureText>
+              <CityText>{city}</CityText>
               <img
                 className="weather-icon"
                 src={`https://openweathermap.org/img/wn/${weatherIcon}.png`}
@@ -231,20 +223,6 @@ const Home = () => {
           </MainFlexBox>
         )}
       </div>
-
-      {/* <div className="outfit-container">
-        <h2 className="outfit-title">추천 의상</h2>
-        <div className="outfit-items">
-          {outfit?.map((item, index) => (
-            <img
-              src={item}
-              alt={`outfit-${index}`}
-              className="outfit-item"
-              key={index}
-            ></img>
-          ))}
-        </div>
-      </div> */}
     </Wrapper>
   );
 };

@@ -4,7 +4,7 @@ import "react-circular-progressbar/dist/styles.css";
 import styled from "styled-components";
 
 const Container = styled.div`
-  width: 100px;
+  width: 140px;
 `;
 
 const ContainerText = styled.div`
@@ -14,50 +14,77 @@ const ContainerText = styled.div`
   font-size: 16px;
 `;
 
+const Status = styled.p`
+  font-size: 14px;
+  margin-top: 5px;
+`;
+
+const Span = styled.span`
+  font-size: 13px;
+`;
+
 const DustProgress = ({ dust }) => {
   const [percentage, setpercentage] = useState(0);
+  //Pm25
+  const [pm25Status, setPm25Status] = useState("");
+  const [pm25Color, setPm25Color] = useState("");
+  //Pm10
+  const [pm10Color, setPm10Color] = useState("");
+  const [pm10Status, setPm10Status] = useState("");
+  //ozone
+  const [ozoneStatus, setOzoneStatus] = useState("");
+  const [ozoneColor, setOzoneColor] = useState("");
 
-  const pm25Colors = [
-    { min: 0, max: 15, color: "blue" },
-    { min: 16, max: 35, color: "green" },
-    { min: 36, max: 75, color: "yellow" },
-    { min: 76, max: 500, color: "red" },
-  ];
+  useEffect(() => {
+    const pm25Value = parseInt(dust?.pm25Value);
+    if (pm25Value >= 0 && pm25Value <= 15) {
+      setPm25Status("좋음");
+      setPm25Color("#3498db");
+    } else if (pm25Value >= 16 && pm25Value <= 35) {
+      setPm25Status("보통");
+      setPm25Color("#2ecc71");
+    } else if (pm25Value >= 36 && pm25Value <= 75) {
+      setPm25Status("나쁨");
+      setPm25Color("#f1c40f");
+    } else if (pm25Value > 75) {
+      setPm25Status("매우나쁨");
+      setPm25Color("#e74c3c");
+    }
+  }, [dust]);
 
-  const pm10Colors = [
-    { min: 0, max: 30, color: "blue" },
-    { min: 31, max: 81, color: "green" },
-    { min: 81, max: 150, color: "yellow" },
-    { min: 151, max: 600, color: "red" },
-  ];
+  useEffect(() => {
+    const pm10Value = dust?.pm10Value;
+    if (pm10Value >= 0 && pm10Value <= 30) {
+      setPm10Status("좋음");
+      setPm10Color("#3498db");
+    } else if (pm10Value >= 31 && pm10Value <= 81) {
+      setPm10Status("보통");
+      setPm10Color("#2ecc71");
+    } else if (pm10Value >= 81 && pm10Value <= 150) {
+      setPm10Status("나쁨");
+      setPm10Color("#f1c40f");
+    } else if (pm10Value > 150) {
+      setPm10Status("매우나쁨");
+      setPm10Color("#e74c3c");
+    }
+  }, [dust]);
 
-  const ozoneColors = [
-    { min: 0, max: 0.03, color: "blue" },
-    { min: 0.031, max: 0.09, color: "green" },
-    { min: 0.091, max: 0.15, color: "yellow" },
-    { min: 0.151, max: 0.6, color: "red" },
-  ];
-
-  const pm10Color =
-    pm10Colors.find(
-      (color) => color.min <= dust?.pm10Value && color.max >= dust?.pm10Value
-    )?.color || "blue";
-
-  const pm25Color =
-    pm25Colors.find(
-      (color) => color.min <= dust?.pm25Value && color.max >= dust?.pm25Value
-    )?.color || "blue";
-
-  const ozoneColor =
-    ozoneColors.find(
-      (color) => color.min <= dust?.o3Value && color.max >= dust?.o3Value
-    )?.color || "blue";
-
-  //
-  // const percentageBar = (color) => {
-  //   const colorPercent = color
-  //   return;
-  // };
+  useEffect(() => {
+    const o3Value = dust?.o3Value;
+    if (o3Value >= 0 && o3Value <= 0.03) {
+      setOzoneStatus("좋음");
+      setOzoneColor("#3498db");
+    } else if (o3Value >= 0.031 && o3Value <= 0.09) {
+      setOzoneStatus("보통");
+      setOzoneColor("#2ecc71");
+    } else if (o3Value >= 0.091 && o3Value <= 0.15) {
+      setOzoneStatus("나쁨");
+      setOzoneColor("#f1c40f");
+    } else if (o3Value > 0.15) {
+      setOzoneStatus("매우나쁨");
+      setOzoneColor("#e74c3c");
+    }
+  }, [dust]);
 
   return (
     <>
@@ -69,14 +96,17 @@ const DustProgress = ({ dust }) => {
             strokeLinecap: "butt",
             textSize: "16px",
             pathTransitionDuration: 0.5,
-            pathColor: `rgba(52,152,219,1)`,
+            pathColor: pm25Color,
             textColor: "#fff",
-            trailColor: "#d6d6d6",
+            trailColor: pm25Color,
             backgroundColor: "#3e98c7",
           })}
         />
         <ContainerText>
-          <h4>초미세먼지(PM2.5)</h4>
+          <h4>
+            초미세먼지<Span>(PM2.5)</Span>
+          </h4>
+          <Status>{pm25Status}</Status>
         </ContainerText>
       </Container>
 
@@ -88,15 +118,18 @@ const DustProgress = ({ dust }) => {
             strokeLinecap: "butt",
             textSize: "16px",
             pathTransitionDuration: 0.5,
-            pathColor: `rgba(62, 152, 199, ${percentage / 100})`,
+            pathColor: pm10Color,
             textColor: "#fff",
-            trailColor: "#d6d6d6",
+            trailColor: pm10Color,
             backgroundColor: "#3e98c7",
           })}
         />
 
         <ContainerText>
-          <h4>미세먼지(PM10)</h4>
+          <h4>
+            미세먼지<Span>(PM10)</Span>
+          </h4>
+          <Status>{pm10Status}</Status>
         </ContainerText>
       </Container>
 
@@ -108,15 +141,17 @@ const DustProgress = ({ dust }) => {
             strokeLinecap: "butt",
             textSize: "16px",
             pathTransitionDuration: 0.5,
-            pathColor: `rgba(62, 152, 199, ${percentage / 100})`,
+            pathColor: ozoneColor,
             textColor: "#fff",
-            trailColor: "#d6d6d6",
+            trailColor: ozoneColor,
             backgroundColor: "#3e98c7",
           })}
         />
-
         <ContainerText>
-          <h4>오존</h4>
+          <h4>
+            오존<Span>(O3)</Span>
+          </h4>
+          <Status>{ozoneStatus}</Status>
         </ContainerText>
       </Container>
     </>
