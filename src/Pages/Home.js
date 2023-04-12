@@ -140,24 +140,32 @@ const Home = () => {
     setLoading(true);
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        const { latitude, longitude } = position.coords;
-        //tm 좌표 변환계
-        const tmCoords = await convertToTmCoords([
-          position.coords.longitude,
-          position.coords.latitude,
-        ]);
+        try {
+          const { latitude, longitude } = position.coords;
+          //tm 좌표 변환계
+          const tmCoords = await convertToTmCoords([
+            position.coords.longitude,
+            position.coords.latitude,
+          ]);
 
-        const nearbyMsrstn = await fetchNearbyMsrstn(tmCoords[0], tmCoords[1]);
-        const dustData = await fetchDustData(nearbyMsrstn[0].stationName);
-        const hourWeatherData = await fetchHourWeather(latitude, longitude);
-        const weatherData = await fetchWeather(latitude, longitude);
+          const nearbyMsrstn = await fetchNearbyMsrstn(
+            tmCoords[0],
+            tmCoords[1]
+          );
+          const dustData = await fetchDustData(nearbyMsrstn[0].stationName);
+          const hourWeatherData = await fetchHourWeather(latitude, longitude);
+          const weatherData = await fetchWeather(latitude, longitude);
 
-        setTemperature(weatherData.main.temp);
-        setWeatherCode(weatherData.weather[0].id);
-        setWeatherIcon(weatherData.weather[0].icon);
-        setCity(weatherData.name);
-        setDust(dustData);
-        setHoursWeather(hourWeatherData.list);
+          setTemperature(weatherData.main.temp);
+          setWeatherCode(weatherData.weather[0].id);
+          setWeatherIcon(weatherData.weather[0].icon);
+          setCity(weatherData.name);
+          setDust(dustData);
+          setHoursWeather(hourWeatherData.list);
+        } catch (error) {
+          console.error(error);
+        }
+
         setLoading(false);
       },
 

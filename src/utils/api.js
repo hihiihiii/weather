@@ -12,7 +12,7 @@ export const fetchHourWeather = async (latitude, longitude) => {
 
 //근처 관측소
 export const fetchNearbyMsrstn = async (tmX, tmY) => {
-  const apiURL = `http://apis.data.go.kr/B552584/MsrstnInfoInqireSvc/getNearbyMsrstnList?serviceKey=${API_KEY_DUST}&returnType=json&tmX=${tmX}&tmY=${tmY}&ver=1.0`;
+  const apiURL = `https://apis.data.go.kr/B552584/MsrstnInfoInqireSvc/getNearbyMsrstnList?serviceKey=${API_KEY_DUST}&returnType=json&tmX=${tmX}&tmY=${tmY}&ver=1.0`;
   const response = await fetch(apiURL);
   const data = await response.json();
   return data.response.body.items;
@@ -20,7 +20,7 @@ export const fetchNearbyMsrstn = async (tmX, tmY) => {
 
 //해당 관측소 대기오염 정보
 export const fetchDustData = async (stationName) => {
-  const apiURL = `http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?stationName=${stationName}&serviceKey=${API_KEY_DUST}&returnType=json&numOfRows=1&pageNo=1&dataTerm=DAILY&ver=1.0`;
+  const apiURL = `https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?stationName=${stationName}&serviceKey=${API_KEY_DUST}&returnType=json&numOfRows=1&pageNo=1&dataTerm=DAILY&ver=1.0`;
   const response = await fetch(apiURL);
   const data = await response.json();
   return data.response.body.items[0];
