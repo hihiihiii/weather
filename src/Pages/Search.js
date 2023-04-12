@@ -98,7 +98,7 @@ const Search = () => {
       <SearchTitle>What to Wear?</SearchTitle>
       <SearchInput
         type="text"
-        placeholder="위치를 입력하세요."
+        placeholder="영어로 입력바랍니다..!!"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         onKeyDown={handleKeyPress}
